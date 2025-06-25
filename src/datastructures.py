@@ -10,8 +10,7 @@ from random import randint
 class FamilyStructure:
     def __init__(self, last_name):
         self.last_name = last_name
-
-        # example list of members
+        self._next_id = 1
         self._members = [
             {
                 "id": self._generateId(),
@@ -38,18 +37,10 @@ class FamilyStructure:
 
     # read-only: Use this method to generate random members ID's when adding members into the list
     def _generateId(self):
-        return randint(0, 99999999)
+        generated_id = self._next_id
+        self._next_id += 1
+        return generated_id
     
-
-    def serialize(self, member):
-        response_body = {
-            "id": member["id"],
-            "first_name": member["first_name"],
-            "last_name": member["last_name"],
-            "age": member["age"],
-            "lucky_number": member["lucky_number"]
-        }
-        return response_body
 
     def add_member(self, member):
         # fill this method and update the return
@@ -58,7 +49,8 @@ class FamilyStructure:
 
         member["last_name"] = self.last_name
         self._members.append(member)
-        return self.serialize(member)
+        
+        return member
 
 
     def delete_member(self, id):
@@ -71,10 +63,10 @@ class FamilyStructure:
 
     def get_member(self, id):
         # fill this method and update the return
-        for member in self._members:
-            if member["id"] == id:
-                return member
-            return None
+        member = list(filter(lambda member: member["id"] == id, self._members))
+        if len(member) > 0:
+            return member[0]
+        return None
 
     # This method is done, it returns a list with all the family members
     def get_all_members(self):

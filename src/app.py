@@ -14,7 +14,6 @@ app.url_map.strict_slashes = False
 CORS(app)
 
 
-
 # Create the jackson family object
 jackson_family = FamilyStructure("Jackson")
 
@@ -40,27 +39,26 @@ def handle_hello():
         "family": members
     }
 
-    return jsonify(response_body), 200
+    # return jsonify(response_body), 200
+    return jsonify(members), 200
 
-@app.route('/member/<int:member_id>', methods=['GET'])
-def member(member_id):
-    member = jackson_family.get_member(member_id)
-    if member != None:
-        response_body = jackson_family.serialize(member)
+
+@app.route('/members/<int:id>', methods=['GET'])
+def get_member(id):
+    member = jackson_family.get_member(id)
         
-    if response_body != None:
-        return jsonify(response_body), 200
-    else:
-        return jsonify("Error fetching family member"), 400
+    return jsonify(member), 200
+    
 
-@app.route('/member', methods=['POST'])
+@app.route('/members', methods=['POST'])
 def add_member():
     
     member = {
     "id": request.json.get("id"),
     "first_name":request.json.get("first_name"),
     "age": request.json.get("age"),
-    "lucky_number": request.json.get("lucky_number")
+    "lucky_numbers": request.json.get("lucky_numbers"),
+    "last_name": None
     }
 
     response_body = jackson_family.add_member(member)
@@ -70,15 +68,12 @@ def add_member():
     else:
         return jsonify("Error adding family member"), 400
 
-@app.route('/member/<int:member_id>', methods=['DELETE'])
-def delete_member(member_id):
+@app.route('/members/<int:id>', methods=['DELETE'])
+def delete_member(id):
     
-    response_body = jackson_family.delete_member(member_id)
-    if response_body != None:
-        return jsonify(response_body), 200
-    else:
-        return jsonify("Error deleting family member"), 400
-
+    response_body = jackson_family.delete_member(id)
+    
+    return jsonify({"done": True}), 200
 
 
 
